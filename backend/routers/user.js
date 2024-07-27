@@ -8,10 +8,6 @@ const { User, Account } = require("../db");
 const JWT_SECRET = require("../config");
 const { authMiddleware } = require("../middleware");
 
-router.get("/", (req, res) => {
-  res.send("User Say Hello ");
-});
-
 const signupSchema = zod.object({
   username: zod.string(),
   password: zod.string(),
@@ -40,7 +36,7 @@ router.post("/signup", async (req, res) => {
 
   await Account.create({
     userId,
-    balance: 1 + Math.random() * 10000,
+    balance: Math.floor(1 + Math.random() * 1000000),
   });
 
   // -----------------------------------
@@ -58,7 +54,7 @@ router.post("/signup", async (req, res) => {
 });
 
 const signInSchema = zod.object({
-  username: zod.string(),
+  userId: zod.string(),
   password: zod.string(),
 });
 
@@ -72,7 +68,7 @@ router.post("/signin", async (req, res) => {
     });
 
   const user = await User.findOne({
-    username: body.username,
+    userId: body.username,
     password: body.password,
   });
 
@@ -137,6 +133,7 @@ router.get("/bulk", async (req, res) => {
   });
   res.json({
     user: users.map((user) => ({
+      _id: user._id,
       username: user.username,
       firstname: user.firstname,
       lastname: user.lastname,
